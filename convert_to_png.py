@@ -11,5 +11,5 @@ for file in path.iterdir():
         img = Image.open(file)
         img.convert('RGB')
         img.save(file.replace(file[file.find('.') + 1:], 'png'), 'png')
-        os.remove(file)
         img.close()
+        os.remove(file)
