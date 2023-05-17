@@ -12,6 +12,7 @@ client = commands.Bot(command_prefix='!', intents=intents)
 async def on_ready():
     print('Shine.AI is not online!')
     await client.change_presence(activity=discord.Game(name='currently not hunting'))
+    
 @client.command('init_hunt')
 async def init_hunt(ctx):
     await ctx.reply('Check the host device for more information!')
