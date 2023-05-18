@@ -1,15 +1,6 @@
 import socket
 import threading
 
-# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# s.bind((socket.gethostname(), 5000))
-# s.listen(5)
-
-# bot_connected = False
-# hunt_connected = False
-# ss_exists = False
-# shiny_found = False
-
 class Server():
 
     def __init__(self):
