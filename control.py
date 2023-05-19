@@ -1,4 +1,6 @@
+from typing import List
 import pyautogui
+import time
 
 # Define class that handles 3ds controls
 LEFT = 'q'
@@ -15,6 +17,17 @@ def input_3ds(key: str):
     "Used to make inputs on the 3DS"
     pyautogui.keyDown(key)
     pyautogui.keyUp(key)
+
+def encounter(inputs: List[str], intervals: List[int]) -> None:
+    """Preforms one encounter of the hunt. 
+    Inputs is a list of inputs and intervals is the time inbetween each input\n
+    
+    Example: inputs = [control.A, control.A, control.A], intervals = [5, 5, 5]\n
+    This would input A three times with five seconds inbetween
+    """
+    for i in range(len(inputs)):
+        input_3ds(inputs[i])
+        time.sleep(intervals[i])
 
 def soft_reset():
     pyautogui.keyDown(L)
