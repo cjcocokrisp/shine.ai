@@ -1,3 +1,4 @@
+from datetime import datetime
 import socket
 import threading
 
@@ -6,11 +7,22 @@ class Server():
     def __init__(self):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((socket.gethostname(), 5000))
+        # Communication data
         self.bot_connected = False
         self.hunt_connected = False
         self.ss_exists = False
         self.shiny_found = False
+        # Hunt data
+        self.hunt = ""
+        self.game = ""
+        self.method = ""
         self.encounters = 0
+        self.phase = 0
+        self.find_date = ""
+        self.find_time = ""
+
+    def generate_log_file(self):
+        pass
 
     def handle_client(self, client_socket, address):
         print(f"[CONNECTION] {address}")
@@ -26,7 +38,6 @@ class Server():
             while msg.find("SA.") != -1:
                 valid = True
                 cmd = msg[msg.find("SA.") + 3 : msg.find("\n")]
-                print(cmd)
                 cmds.append(cmd)
                 msg = msg.replace("SA." + cmd + "\n", "", 1)
 
@@ -56,6 +67,9 @@ class Server():
                     if cmd[0:2] == 'sh': # shiny commands
                         if cmd[3:] == "on_screen":
                             self.shiny_found = True
+                            now = datetime.now()
+                            self.find_date = str(now.date())
+                            self.find_time = str(now.strftime("%H:%M"))
                             print("[SERVER ACTION] The shiny has been found.")
                         elif cmd[3:] == "found":
                             client_socket.send(str(self.shiny_found).encode())
@@ -70,9 +84,40 @@ class Server():
                             self.ss_exists = False
                             print("[SERVER ACTION] The screenshot has been deleted.")
 
-                    if cmd == "disconnect":
-                        print(f"[DISCONNECTION] {address} has disconnected.")
-                        connected = False
+                    if cmd[0:4] == 'util': # utility commands
+                        if cmd.find('hunt') != -1:
+                            self.hunt = cmd[cmd.find(' ') + 1:]
+                            print(f"[SERVER ACTION] Hunt has been set to {self.hunt}")
+                        elif cmd.find('game') != -1:
+                            self.game = cmd[cmd.find(' ') + 1:]
+                            print(f"[SERVER ACTION] Game has been set to {self.game}")
+                        elif cmd.find('method') != -1:
+                            self.method = cmd[cmd.find(' ') + 1:]
+                            print(f"[SERVER ACTION] Method has been set to {self.method}")
+                        elif cmd.find('encounters') != -1:
+                            self.encounters = int(cmd[cmd.find(' ') + 1:])
+                            print(f"[SERVER ACTION] Encounters has been set to {self.encounters}")
+                        elif cmd.find('phase') != -1:
+                            self.phase = int(cmd[cmd.find(' ') + 1:])
+                            print(f"[SERVER ACTION] Phase has been set to {self.phase}")
+                        elif cmd[5:] == "log":
+                            file = open(f"{self.hunt}.hunt", 'w')
+                            file.write("---SHINE.AI Shiny Hunt Log---\n")
+                            file.write(f"Hunt: {self.hunt}\n")
+                            file.write(f"Game: {self.game}\n")
+                            file.write(f"Method: {self.method}\n")
+                            file.write(f"Encounters: {self.encounters}\n")
+                            file.write(f"Phase: {self.phase}\n")
+                            if self.shiny_found:
+                                file.write(f"Shiny found on {self.find_date} at {self.find_time}")
+                            else:
+                                file.write("Shiny has not been found")
+                            file.close()
+                            print(f"[SERVER ACTION] A log file was generated.")
+                        elif cmd[5:] == "disconnect":
+                            print(f"[DISCONNECTION] {address} has disconnected.")
+                            connected = False
+
             valid = False
         client_socket.close()
      
