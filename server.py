@@ -25,7 +25,20 @@ class Server():
         self.find_time = ""
 
     def generate_log_file(self):
-        pass
+        file = open(f"{self.hunt}.hunt", 'w')
+        file.write("---SHINE.AI Shiny Hunt Log---\n")
+        file.write(f"Hunt: {self.hunt}\n")
+        file.write(f"Game: {self.game}\n")
+        file.write(f"Method: {self.method}\n")
+        file.write(f"Encounters: {self.encounters}\n")
+        file.write(f"Phase: {self.phase}\n")
+        file.write(f"Start Time: {self.start_date}\n")
+        file.write(f"Start Time: {self.start_time}\n")
+        if self.shiny_found:
+            file.write(f"Shiny found on {self.find_date} at {self.find_time}")
+        else:
+            file.write("Shiny has not been found")
+        file.close()
 
     def handle_client(self, client_socket, address):
         print(f"[CONNECTION] {address}")
@@ -104,20 +117,7 @@ class Server():
                             self.phase = int(cmd[cmd.find(' ') + 1:])
                             print(f"[SERVER ACTION] Phase has been set to {self.phase}")
                         elif cmd[5:] == "log":
-                            file = open(f"{self.hunt}.hunt", 'w')
-                            file.write("---SHINE.AI Shiny Hunt Log---\n")
-                            file.write(f"Hunt: {self.hunt}\n")
-                            file.write(f"Game: {self.game}\n")
-                            file.write(f"Method: {self.method}\n")
-                            file.write(f"Encounters: {self.encounters}\n")
-                            file.write(f"Phase: {self.phase}\n")
-                            file.write(f"Start Time: {self.start_date}\n")
-                            file.write(f"Start Time: {self.start_time}\n")
-                            if self.shiny_found:
-                                file.write(f"Shiny found on {self.find_date} at {self.find_time}")
-                            else:
-                                file.write("Shiny has not been found")
-                            file.close()
+                            self.generate_log_file()
                             print(f"[SERVER ACTION] A log file was generated.")
                         elif cmd[5:] == "disconnect":
                             print(f"[DISCONNECTION] {address} has disconnected.")

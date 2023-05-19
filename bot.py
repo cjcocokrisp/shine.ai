@@ -27,6 +27,7 @@ async def init_hunt(ctx):
     phase = int(input('What phase of the hunt is this? '))
     print(f'This hunt has been initialized to be updated in #{ctx.message.channel}')
     print('-------------------------------------------------------------')
+    channel = client.get_channel(1108978958814425098)
 
     # Connect to the server
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -45,6 +46,10 @@ async def init_hunt(ctx):
     s.send(b"SA.h.status\n")
     while s.recv(2048).decode() != "True":
         print("Waiting for hunt script to connect...")
+        try:
+            await channel.send("Waiting for hunt script to connect...")
+        except:
+            pass
         time.sleep(1)
         s.send(b"SA.h.status\n")
     print("Connection established beginning updates")
@@ -58,6 +63,10 @@ async def init_hunt(ctx):
         s.send(b"SA.ss.exists\n")
         while s.recv(2048).decode() != "True":
             print("Waiting for a screenshot...")
+            try:
+                await channel.send("Waiting for screenshot...")
+            except:
+                pass
             time.sleep(1)
             s.send(b"SA.ss.exists\n")
         print("Screenshot recieved updating user")
@@ -66,20 +75,38 @@ async def init_hunt(ctx):
         encounters += 1
         s.send(b"SA.sh.found\n")
         if s.recv(2048).decode() == "True":
-            await ctx.reply(f"Encounter {encounters} is shiny!")
+            try:  
+                await ctx.reply(f"Encounter {encounters} is shiny!")
+            except:
+                pass
             hunting = False
-            await client.change_presence(activity=discord.Game(name='currently not hunting'))
+            try:
+                await client.change_presence(activity=discord.Game(name='currently not hunting'))
+            except:
+                pass
         else:
-            await ctx.send(f"Encounter {encounters} is not shiny...")
-            await client.change_presence(activity=discord.Game(name=f'currently hunting {hunt} | {encounters} encounters'))
-        await ctx.send(file=discord.File('./temp.png'))
+            try:
+                await ctx.send(f"Encounter {encounters} is not shiny...")
+                await client.change_presence(activity=discord.Game(name=f'currently hunting {hunt} | {encounters} encounters'))
+            except:
+                pass
+        try:
+            await ctx.send(file=discord.File('./temp.png'))
+            print("User updated")
+        except:
+            pass
 
         os.remove('./temp.png')
         s.send(b"SA.ss.del\n")
         s.send(b"SA.e.incr\n")
 
     s.send(b"SA.util.log\n")
-    ctx.reply(f"The hunt has been completed after {encounters} encounters")
+    try:
+        ctx.reply(f"The hunt has been completed after {encounters} encounters")
+    except:
+        pass
     print("The hunt has been completed.")
+    s.send(b"SA.util.disconnect\n")
+    s.close()
 
 client.run("token")

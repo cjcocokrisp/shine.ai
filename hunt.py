@@ -82,6 +82,7 @@ while hunting:
         print("Bot is handling screenshot...")
         time.sleep(1)
         s.send(b"SA.ss.exists\n")
+    print("Bot update complete resuming hunt")
 
 print("-----------------------------------------------")
 s.send(b"SA.e.check\n")
