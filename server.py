@@ -18,6 +18,9 @@ class Server():
         self.method = ""
         self.encounters = 0
         self.phase = 0
+        now = datetime.now()
+        self.start_date = str(now.date())
+        self.start_time = str(now.strftime("%H:%M"))
         self.find_date = ""
         self.find_time = ""
 
@@ -108,6 +111,8 @@ class Server():
                             file.write(f"Method: {self.method}\n")
                             file.write(f"Encounters: {self.encounters}\n")
                             file.write(f"Phase: {self.phase}\n")
+                            file.write(f"Start Time: {self.start_date}")
+                            file.write(f"Start Time: {self.start_time}")
                             if self.shiny_found:
                                 file.write(f"Shiny found on {self.find_date} at {self.find_time}")
                             else:
