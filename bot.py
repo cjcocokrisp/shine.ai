@@ -102,7 +102,7 @@ async def init_hunt(ctx):
 
     s.send(b"SA.util.log\n")
     try:
-        ctx.reply(f"The hunt has been completed after {encounters} encounters")
+        await ctx.reply(f"The hunt has been completed after {encounters} encounters")
     except:
         pass
     print("The hunt has been completed.")
