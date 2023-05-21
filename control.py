@@ -38,3 +38,10 @@ def soft_reset():
     pyautogui.keyUp(R)
     pyautogui.keyUp(START)
     pyautogui.keyUp(SELECT)
+
+def repeat_button_input(key, sec):
+    """Press a button every second for a certain amount of time (in seconds)."""
+    start_time = time.time()
+    while time.time() - start_time  < sec:
+        input_3ds(key)
+        time.sleep(1)
