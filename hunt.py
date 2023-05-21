@@ -1,4 +1,4 @@
-from control import encounter, soft_reset, A, RIGHT
+from control import encounter, input_3ds, soft_reset, repeat_button_input, A, START, LEFT
 from PIL import ImageGrab
 from pathlib import Path
 import tensorflow as tf
@@ -8,9 +8,9 @@ import socket
 import time
 x = 0
 # Init game soft reset load time and the inputs and intervals
-load_time = 15
-inputs = [A, A, A, A, A, RIGHT, RIGHT, A, A]
-intervals = [3, 5, 3, 4, 4, 1, 1, 1, 12]
+load_time = 9
+inputs = [START, A, LEFT]
+intervals = [3, 3.3, 0]
 
 # Open the neural network
 model_name = input("What is the name of the model you are trying to hunt? ")
@@ -37,6 +37,8 @@ while hunting:
     soft_reset()
     time.sleep(load_time)
     encounter(inputs, intervals)
+    repeat_button_input(A, 138)
+    input_3ds(A)
 
     # Get a screenshot of the kit-kat-slim window
     winlist = []
