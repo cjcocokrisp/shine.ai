@@ -1,16 +1,18 @@
 from control import encounter, input_3ds, soft_reset, repeat_button_input, A, START, LEFT
-from PIL import ImageGrab
+from PIL import ImageGrab, ImageChops, Image
 from pathlib import Path
 import tensorflow as tf
 import numpy as np
 import win32gui
 import socket
 import time
-x = 0
-# Init game soft reset load time and the inputs and intervals
+
+# Init game soft reset load time and the inputs and intervals and other stuff
 load_time = 9
 inputs = [START, A, LEFT]
-intervals = [3, 3.3, 0]
+intervals = [3, 3.4, 0]
+fail_check = Image.open('./fail_before.png')
+x = 0
 
 # Open the neural network
 model_name = input("What is the name of the model you are trying to hunt? ")
@@ -32,31 +34,53 @@ print("-----------------------------------------------")
 
 #Hunt for the shiny
 hunting = True
+x = 4
 while hunting:
     # Do in game encounter
     soft_reset()
     time.sleep(load_time)
     encounter(inputs, intervals)
-    repeat_button_input(A, 138)
+    repeat_button_input(A, 137)
+    time.sleep(2.25)
     input_3ds(A)
+    time.sleep(x)
 
-    # Get a screenshot of the kit-kat-slim window
+    # Delay to check for crash
+    if x < 8:
+        x += 2
+    else:
+        x = 4
+
+    # Find location of the 3ds window
     winlist = []
     def enum_cb(hwnd, result):
         winlist.append((hwnd, win32gui.GetWindowText(hwnd)))
     win32gui.EnumWindows(enum_cb, None)
 
     for hwnd, title in winlist:
-        if title.lower().find('ntrviewer') != -1:
+        if title.lower().find('chokistream') != -1:
             window = (hwnd, title)
             break
 
     win32gui.SetForegroundWindow(window[0])
     location = win32gui.GetWindowRect(window[0])
-    img = ImageGrab.grab(location)
 
+    # Check to see if image is on the correct screen
+    img = ImageGrab.grab(location)
     width, height = img.size
-    img = img.crop((2, 26, width - 1, height / 1.90899)) # box for cropping screenshot
+    img = img.crop((8, 220, width - 360, height - 8))
+    img.save('test.png', 'png')
+    diff = ImageChops.difference(img, fail_check)
+    if not diff.getbbox():
+        print("On wrong screen fixing...")
+        input_3ds(A)
+        time.sleep(5)
+    img.close()
+
+    # Get a screenshot of the 3ds stream
+    img = ImageGrab.grab(location)
+    width, height = img.size
+    img = img.crop((3, 26, width - 2, height - 3)) # box for cropping screenshot
     img.save("temp.png", "png")
     img.close()
 

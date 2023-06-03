@@ -96,7 +96,6 @@ async def init_hunt(ctx):
         except:
             pass
 
-        os.remove('./temp.png')
         s.send(b"SA.ss.del\n")
         s.send(b"SA.e.incr\n")
 
@@ -109,4 +108,4 @@ async def init_hunt(ctx):
     s.send(b"SA.util.disconnect\n")
     s.close()
 
-client.run("token")
+client.run("MTEwNzQwNTk4MjE4ODk3ODIzNg.GppvHi.tUAWTf_6_qbxqwy7UEVFNpTCrYqsC5-yq49T_I")

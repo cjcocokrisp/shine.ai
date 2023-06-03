@@ -7,12 +7,10 @@ class Server():
     def __init__(self):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((socket.gethostname(), 5000))
-        # Communication data
         self.bot_connected = False
         self.hunt_connected = False
         self.ss_exists = False
         self.shiny_found = False
-        # Hunt data
         self.hunt = ""
         self.game = ""
         self.method = ""
@@ -39,6 +37,22 @@ class Server():
         else:
             file.write("Shiny has not been found")
         file.close()
+
+    def reset_data(self):
+        self.bot_connected = False
+        self.hunt_connected = False
+        self.ss_exists = False
+        self.shiny_found = False
+        self.hunt = ""
+        self.game = ""
+        self.method = ""
+        self.encounters = 0
+        self.phase = 0
+        now = datetime.now()
+        self.start_date = str(now.date())
+        self.start_time = str(now.strftime("%H:%M"))
+        self.find_date = ""
+        self.find_time = ""
 
     def handle_client(self, client_socket, address):
         print(f"[CONNECTION] {address}")
@@ -116,6 +130,9 @@ class Server():
                         elif cmd.find('phase') != -1:
                             self.phase = int(cmd[cmd.find(' ') + 1:])
                             print(f"[SERVER ACTION] Phase has been set to {self.phase}")
+                        elif cmd.find('reset') != -1:
+                            self.reset_data()
+                            print(f"[SERVER ACTION] The server data has been reset to its intial values.")
                         elif cmd[5:] == "log":
                             self.generate_log_file()
                             print(f"[SERVER ACTION] A log file was generated.")
