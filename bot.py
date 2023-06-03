@@ -108,4 +108,4 @@ async def init_hunt(ctx):
     s.send(b"SA.util.disconnect\n")
     s.close()
 
-client.run("MTEwNzQwNTk4MjE4ODk3ODIzNg.GppvHi.tUAWTf_6_qbxqwy7UEVFNpTCrYqsC5-yq49T_I")
+client.run("token")
