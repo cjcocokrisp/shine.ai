@@ -40,8 +40,8 @@ while hunting:
     soft_reset()
     time.sleep(load_time)
     encounter(inputs, intervals)
-    repeat_button_input(A, 137)
-    time.sleep(2.25)
+    repeat_button_input(A, 133)
+    time.sleep(5)
     input_3ds(A)
     time.sleep(x)
 
@@ -58,7 +58,7 @@ while hunting:
     win32gui.EnumWindows(enum_cb, None)
 
     for hwnd, title in winlist:
-        if title.lower().find('chokistream') != -1:
+        if title.lower().find('snickerstream') != -1:
             window = (hwnd, title)
             break
 
@@ -68,8 +68,7 @@ while hunting:
     # Check to see if image is on the correct screen
     img = ImageGrab.grab(location)
     width, height = img.size
-    img = img.crop((8, 220, width - 360, height - 8))
-    img.save('test.png', 'png')
+    img = img.crop((8, 210, width - 330, (height / 1.90899) - 1))
     diff = ImageChops.difference(img, fail_check)
     if not diff.getbbox():
         print("On wrong screen fixing...")
@@ -80,7 +79,7 @@ while hunting:
     # Get a screenshot of the 3ds stream
     img = ImageGrab.grab(location)
     width, height = img.size
-    img = img.crop((3, 26, width - 2, height - 3)) # box for cropping screenshot
+    img = img.crop((2, 26, width - 1, (height / 1.90899) - 1)) # box for cropping screenshot
     img.save("temp.png", "png")
     img.close()
 
@@ -109,6 +108,7 @@ while hunting:
         time.sleep(1)
         s.send(b"SA.ss.exists\n")
     print("Bot update complete resuming hunt")
+    time.sleep(3)
 
 print("-----------------------------------------------")
 s.send(b"SA.e.check\n")

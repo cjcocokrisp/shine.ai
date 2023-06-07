@@ -10,7 +10,7 @@ class Server():
         self.bot_connected = False
         self.hunt_connected = False
         self.ss_exists = False
-        self.shiny_found = False
+        self.shiny_found = "False"
         self.hunt = ""
         self.game = ""
         self.method = ""
@@ -42,7 +42,7 @@ class Server():
         self.bot_connected = False
         self.hunt_connected = False
         self.ss_exists = False
-        self.shiny_found = False
+        self.shiny_found = "False"
         self.hunt = ""
         self.game = ""
         self.method = ""
@@ -96,13 +96,13 @@ class Server():
 
                     if cmd[0:2] == 'sh': # shiny commands
                         if cmd[3:] == "on_screen":
-                            self.shiny_found = True
+                            self.shiny_found = "Found"
                             now = datetime.now()
                             self.find_date = str(now.date())
                             self.find_time = str(now.strftime("%H:%M"))
                             print("[SERVER ACTION] The shiny has been found.")
                         elif cmd[3:] == "found":
-                            client_socket.send(str(self.shiny_found).encode())
+                            client_socket.send(self.shiny_found.encode())
 
                     if cmd[0:2] == 'ss': # screenshot commands
                         if cmd[3:] == "exists":
@@ -112,7 +112,7 @@ class Server():
                             print("[SERVER ACTION] A screenshot currently exists.")
                         elif cmd[3:] == "del":
                             self.ss_exists = False
-                            print("[SERVER ACTION] The screenshot has been deleted.")
+                            print("[SERVER ACTION] The screenshot has been processed.")
 
                     if cmd[0:4] == 'util': # utility commands
                         if cmd.find('hunt') != -1:

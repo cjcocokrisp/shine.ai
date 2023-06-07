@@ -70,11 +70,11 @@ async def init_hunt(ctx):
             time.sleep(1)
             s.send(b"SA.ss.exists\n")
         print("Screenshot recieved updating user")
-
+        
         # Update hunt and user
         encounters += 1
         s.send(b"SA.sh.found\n")
-        if s.recv(2048).decode() == "True":
+        if s.recv(2048).decode() == "Found":
             try:  
                 await ctx.reply(f"Encounter {encounters} is shiny!")
             except:
