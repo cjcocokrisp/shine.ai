@@ -4,6 +4,11 @@ import socket
 import time
 import os
 
+# Read token from text file
+file = open('./discord_token.txt', 'r')
+token = file.readline()
+file.close()
+
 # Init discord bot
 intents = discord.Intents.default()
 intents.message_content = True
@@ -108,4 +113,4 @@ async def init_hunt(ctx):
     s.send(b"SA.util.disconnect\n")
     s.close()
 
-client.run("token")
+client.run(token)
