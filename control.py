@@ -8,6 +8,7 @@ RIGHT = 'w'
 UP = 'e'
 DOWN = 'r'
 A = 'a'
+X = 'f'
 L = 's'
 R = 'd'
 START = 'z'
@@ -19,7 +20,8 @@ def input_3ds(key: str):
     pyautogui.keyUp(key)
 
 def encounter(inputs: List[str], intervals: List[int]) -> None:
-    """Preforms one encounter of the hunt. 
+    """
+    Preforms one encounter of the hunt. 
     Inputs is a list of inputs and intervals is the time inbetween each input\n
     
     Example: inputs = [control.A, control.A, control.A], intervals = [5, 5, 5]\n
@@ -27,6 +29,7 @@ def encounter(inputs: List[str], intervals: List[int]) -> None:
     """
     for i in range(len(inputs)):
         input_3ds(inputs[i])
+        print(inputs[i] + ' ')
         time.sleep(intervals[i])
 
 def soft_reset():
@@ -39,9 +42,10 @@ def soft_reset():
     pyautogui.keyUp(START)
     pyautogui.keyUp(SELECT)
 
-def repeat_button_input(key, sec):
+def repeat_button_input(key, sec, interval=1):
     """Press a button every second for a certain amount of time (in seconds)."""
     start_time = time.time()
     while time.time() - start_time  < sec:
         input_3ds(key)
-        time.sleep(1)
+        print(key + ' ')
+        time.sleep(interval)

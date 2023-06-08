@@ -1,4 +1,4 @@
-from control import encounter, input_3ds, soft_reset, repeat_button_input, A, START, LEFT
+from control import encounter, input_3ds, soft_reset, repeat_button_input, A, X, START, LEFT, RIGHT, UP, DOWN 
 from PIL import ImageGrab, ImageChops, Image
 from pathlib import Path
 import tensorflow as tf
@@ -8,11 +8,13 @@ import socket
 import time
 
 # Init game soft reset load time and the inputs and intervals and other stuff
-load_time = 9
-inputs = [START, A, LEFT]
-intervals = [3, 3.4, 0]
-fail_check = Image.open('./fail_before.png')
-x = 0
+load_time = 12
+inputs_pre = [START, A, A, LEFT]
+intervals_pre = [2.5, 4, 4, 0]
+inputs_select = [A, RIGHT, A, A, A, A, DOWN]
+intervals_select = [1, 1, 1, 11, 1, 1, 0]
+inputs_menu = [X, UP, A, A, A, A, A]
+intervals_menu = [0.5, 0.5, 0.5, 0.5, 1, 1, 5]
 
 # Open the neural network
 model_name = input("What is the name of the model you are trying to hunt? ")
@@ -39,11 +41,12 @@ while hunting:
     # Do in game encounter
     soft_reset()
     time.sleep(load_time)
-    encounter(inputs, intervals)
-    repeat_button_input(A, 133)
-    time.sleep(5)
-    input_3ds(A)
-    time.sleep(x)
+    encounter(inputs_pre, intervals_pre)
+    repeat_button_input(A, 26, interval=0.05)
+    time.sleep(6)
+    encounter(inputs_select, intervals_select)
+    repeat_button_input(A, 32, interval=0.05)
+    encounter(inputs_menu, intervals_menu)
 
     # Delay to check for crash
     if x < 8:
@@ -66,20 +69,12 @@ while hunting:
     location = win32gui.GetWindowRect(window[0])
 
     # Check to see if image is on the correct screen
-    img = ImageGrab.grab(location)
-    width, height = img.size
-    img = img.crop((8, 210, width - 330, (height / 1.90899) - 1))
-    diff = ImageChops.difference(img, fail_check)
-    if not diff.getbbox():
-        print("On wrong screen fixing...")
-        input_3ds(A)
-        time.sleep(5)
-    img.close()
+    # UNKNOWN FOR THIS HUNT ATM WILL MOST LIKELY CHANGE
 
     # Get a screenshot of the 3ds stream
     img = ImageGrab.grab(location)
     width, height = img.size
-    img = img.crop((2, 26, width - 1, (height / 1.90899) - 1)) # box for cropping screenshot
+    img = img.crop(((43, (height / 1.90899) - 1, width - 43, height - 3))) # box for cropping screenshot
     img.save("temp.png", "png")
     img.close()
 
