@@ -30,7 +30,7 @@ class Server():
         file.write(f"Method: {self.method}\n")
         file.write(f"Encounters: {self.encounters}\n")
         file.write(f"Phase: {self.phase}\n")
-        file.write(f"Start Time: {self.start_date}\n")
+        file.write(f"Start Date: {self.start_date}\n")
         file.write(f"Start Time: {self.start_time}\n")
         if self.shiny_found:
             file.write(f"Shiny found on {self.find_date} at {self.find_time}")
