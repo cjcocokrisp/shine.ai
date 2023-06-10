@@ -29,7 +29,6 @@ def encounter(inputs: List[str], intervals: List[int]) -> None:
     """
     for i in range(len(inputs)):
         input_3ds(inputs[i])
-        print(inputs[i] + ' ')
         time.sleep(intervals[i])
 
 def soft_reset():
@@ -47,5 +46,4 @@ def repeat_button_input(key, sec, interval=1):
     start_time = time.time()
     while time.time() - start_time  < sec:
         input_3ds(key)
-        print(key + ' ')
         time.sleep(interval)
