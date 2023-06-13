@@ -9,10 +9,9 @@ ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 settings = ConfigParser()
 settings.read('settings.ini')
-theme = settings.get('WINDOW', 'THEME')
 
 app = QtWidgets.QApplication([])
-app.setWindowIcon(QtGui.QIcon(f'assets/themes/{theme}/icon.png'))
+app.setWindowIcon(QtGui.QIcon(f'assets/icon.png'))
 widget = StartMenu()
 widget.resize(settings.getint('WINDOW', 'WINDOW_WIDTH'), settings.getint('WINDOW', 'WINDOW_HEIGHT'))
 widget.setWindowTitle('Shine.AI')
