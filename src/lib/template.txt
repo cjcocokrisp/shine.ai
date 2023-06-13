@@ -1,0 +1,17 @@
+<SHINE.AI_HUNT_FILE>
+
+<LOG>
+Hunt: None
+Game: None
+Method: None
+Encounters: 0
+Phase: 0
+Start Date: None
+Start Time: None
+Shiny has not been found
+
+<COMMANDS>
+
+<INFO>
+Model Name: None
+Passed: False

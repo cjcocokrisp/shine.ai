@@ -10,8 +10,6 @@ class File:
         self.process_log()
         self.process_commands()
         self.process_info()
-        
-        self.file.seek(0)
 
     def process_log(self):
         line = self.file.readline()
@@ -53,5 +51,33 @@ class File:
         
         self.file.seek(0)
 
+    def update_parameter(self, parameter, new_val):
+
+        i = 0 
+        line = self.file.readline()
+        while line != line.find(parameter) == -1:
+            line = self.file.readline()
+            i += 1
+
+        self.file.seek(0) 
+        lines = self.file.readlines()
+        lines[i] = f'{parameter}: {new_val}\n'
+        self.file.seek(0)
+        self.file.writelines(lines)
+        self.file.truncate()
+        self.file.seek(0)
+
+        self.process_log()
+        self.process_commands()
+        self.process_info()
+
     def close(self):
         self.file.close()
+
+def create_file(name, directory):
+    file = open(f'{directory}/{name}.hunt', 'w')
+    template = open('./src/lib/template.txt', 'r')
+    lines = template.readlines()
+    template.close()
+    file.writelines(lines)
+    file.close()
