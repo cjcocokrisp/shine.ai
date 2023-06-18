@@ -2,15 +2,30 @@ class File:
     """
     Procressing for hunt files
     """
+
+    class InvalidFileError(Exception):
+        def __init__(self, file):
+            self.file = file
+
+        def __str__(self):
+            return repr('Not a valid hunt file: ' + self.file)
+
+    def read_method(func):
+        def wrapper(self):
+            func(self)
+            self.file.seek(0)
+        return wrapper
+
     def __init__(self, path:str):
         self.file = open(path, 'r+')
         if self.file.readline() != '<SHINE.AI_HUNT_FILE>\n':
-            raise Exception('Not a valid hunt file!')
+            raise self.InvalidFileError(path)
         
         self.process_log()
         self.process_commands()
         self.process_info()
 
+    @read_method
     def process_log(self):
         line = self.file.readline()
         while line != '<LOG>\n':
@@ -25,8 +40,7 @@ class File:
         self.start_time = self.file.readline().replace('\n','').replace('Start Time: ', '')
         self.status = self.file.readline().replace('\n', '')
         
-        self.file.seek(0)
-
+    @read_method
     def process_commands(self):
         self.commands = []
 
@@ -39,8 +53,7 @@ class File:
             self.commands.append(line.replace('\n', ''))
             line = self.file.readline()
 
-        self.file.seek(0)
-
+    @read_method
     def process_info(self):
         line = self.file.readline()
         while line != '<INFO>\n':
@@ -49,8 +62,6 @@ class File:
         self.model_name = self.file.readline().replace('\n','').replace('Model Name: ', '')
         self.passed = bool(self.file.readline().replace('\n','').replace('Passed: ', ''))
         
-        self.file.seek(0)
-
     def update_parameter(self, parameter, new_val):
 
         i = 0 
