@@ -52,16 +52,18 @@ class Settings():
 
     def create_file(self):
         fp = open('settings.ini', 'w')
-        fp.write('[GENERAL]\n')
         
+        fp.write('[GENERAL]\n')
         for key in self.general.keys():
             fp.write(f'{key} = {self.general[key]}\n')
         fp.write('\n')
 
+        fp.write('[HUNT]\n')
         for key in self.hunt.keys():
             fp.write(f'{key} = {self.hunt[key]}\n')
         fp.write('\n')
 
+        fp.write('[CONTROL]\n')
         for key in self.control.keys():
             fp.write(f'{key} = {self.control[key]}\n')
 
