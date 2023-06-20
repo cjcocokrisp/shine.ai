@@ -70,7 +70,6 @@ class LoadTab(QtWidgets.QWidget):
         self.layout.addWidget(self.change_dir)
         self.layout.addWidget(self.select)
         self.layout.addWidget(self.load)
-        # TODO: Write all buttons (select file, load, change directory)
 
     def get_explorer_file(self, index):
         file = self.sender().model().filePath(index)
@@ -113,13 +112,37 @@ class SettingsTab(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
-        self.win_width = QtWidgets.QLineEdit('')
-        self.win_height = QtWidgets.QLineEdit('Test')
+        self.theme = QtWidgets.QComboBox()
+        self.theme.addItem('Light')
+        self.theme.addItem('Dark')
+        self.default_dir = ChangeDirButton()
         self.button = QtWidgets.QPushButton('Save')
 
         self.layout = QtWidgets.QFormLayout(self)
-        self.layout.addRow(QtWidgets.QLabel('Theme:'), self.win_width)
-        self.layout.addRow(QtWidgets.QLabel('Default Directory:'), self.win_height)
+        self.layout.addRow(QtWidgets.QLabel('Theme:'), self.theme)
+        self.layout.addRow(QtWidgets.QLabel('Default Directory:'), self.default_dir)
+        self.layout.setAlignment(QtCore.Qt.AlignTop)
         self.layout.addWidget(self.button)
 
         # TODO: Figure out settings and write the options and saving button
+
+class ChangeDirButton(QtWidgets.QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.current_dir = QtWidgets.QLabel('./saves')
+        self.button = QtWidgets.QToolButton()
+        self.button.setText('...')
+        self.button.clicked.connect(self.change_dir)
+
+        self.layout = QtWidgets.QHBoxLayout(self)
+        self.layout.addWidget(self.current_dir)
+        self.layout.addWidget(self.button)
+
+    def change_dir(self):
+        self.dialog = QtWidgets.QFileDialog(self)
+        self.dialog.setNameFilter('Folder')
+        self.dialog.setFileMode(QtWidgets.QFileDialog.FileMode.Directory)
+        if self.dialog.exec() == QtWidgets.QDialog.DialogCode.Accepted:
+            new_dir = self.dialog.selectedFiles()
+        self.current_dir.setText(new_dir[0])
