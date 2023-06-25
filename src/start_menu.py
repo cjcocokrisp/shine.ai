@@ -1,18 +1,18 @@
-from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6 import QtWidgets
+from src.controls_menu import ControlsMenu
 from src.lib.file import File, create_file
-import sys
 
 class StartMenu(QtWidgets.QWidget):
-    def __init__(self):
+    def __init__(self, settings):
         super().__init__()
 
         self.tab = QtWidgets.QTabWidget()
         self.tab.addTab(NewTab(), 'New')
-        self.tab.addTab(LoadTab(), 'Load')
-        self.tab.addTab(SettingsTab(), 'Settings')
+        self.tab.addTab(LoadTab(settings), 'Load')
+        self.tab.addTab(SettingsTab(settings), 'Settings')
 
         self.layout = QtWidgets.QVBoxLayout(self)
-        self.layout.addWidget(self.tab, alignment=QtCore.Qt.AlignTop)
+        self.layout.addWidget(self.tab)
 
 class NewTab(QtWidgets.QWidget):
     def __init__(self):
@@ -40,7 +40,7 @@ class NewTab(QtWidgets.QWidget):
         f.update_parameter("Method", self.method.text())
 
 class LoadTab(QtWidgets.QWidget):
-    def __init__(self):
+    def __init__(self, settings):
         super().__init__()
 
         self.dialog = None
@@ -48,10 +48,12 @@ class LoadTab(QtWidgets.QWidget):
         self.explorer = QtWidgets.QFileSystemModel()
         self.explorer.setRootPath('./saves')
         self.explorer.setReadOnly(True)
+        self.explorer.setNameFilters(['*.hunt'])
+        self.explorer.setNameFilterDisables(False)
 
         self.tree_view = QtWidgets.QTreeView()
         self.tree_view.setModel(self.explorer)
-        self.tree_view.setRootIndex(self.explorer.index('./saves'))
+        self.tree_view.setRootIndex(self.explorer.index(settings.general['default_dir']))
         self.tree_view.clicked.connect(self.get_explorer_file)
 
         self.selected_label = QtWidgets.QLabel(f'Selected File: None')
@@ -109,28 +111,85 @@ class LoadTab(QtWidgets.QWidget):
             self.dialog.showMessage('File not found or nothing has been selected.')
 
 class SettingsTab(QtWidgets.QWidget):
-    def __init__(self):
+    def __init__(self, settings):
         super().__init__()
 
+        self.settings = settings
+
         self.theme = QtWidgets.QComboBox()
-        self.theme.addItem('Light')
-        self.theme.addItem('Dark')
-        self.default_dir = ChangeDirButton()
-        self.button = QtWidgets.QPushButton('Save')
+        self.theme.addItems(['Light', 'Dark'])
+        while self.theme.currentText() != self.settings.general['theme']:
+            if self.theme.currentIndex() + 1 > self.theme.count():
+                self.theme.setCurrentIndex(0)
+                self.settings.change_setting('GENERAL', 'theme', self.theme.currentText())
+                break
+            self.theme.setCurrentIndex(self.theme.currentIndex() + 1)
+            
+        self.default_dir = ChangeDirButton(settings)
+
+        self.apps = QtWidgets.QComboBox()
+        self.apps.addItems(['Snickerstream', 'NTRViewer', 'HzMod TEMP', 'Chokistream',
+                            'Elgato TEMP', 'Custom'])
+        while self.apps.currentText() != self.settings.hunt['streaming_app']:
+            if self.apps.currentIndex() + 1 > self.apps.count() - 1:
+                self.apps.setCurrentIndex(0)
+                self.settings.change_setting('HUNT', 'streaming_app', self.apps.currentText())
+                break
+            self.apps.setCurrentIndex(self.apps.currentIndex() + 1)
+        self.apps.currentIndexChanged.connect(self.enable_custom_app)
+
+        self.custom_app = QtWidgets.QLineEdit(self.settings.hunt['custom_app'])
+
+        if self.apps.currentText() != 'Custom':
+            self.custom_app.setEnabled(False)
+
+        self.use_discord = QtWidgets.QCheckBox()
+        if self.settings.hunt['use_discord'] == 'True':
+            self.use_discord.setChecked(True)
+
+        self.discord_token = QtWidgets.QLineEdit(self.settings.hunt['discord_token'])
+
+        self.controls = QtWidgets.QPushButton('...')
+        self.controls.clicked.connect(self.open_controls_menu)
+
+        self.save_button = QtWidgets.QPushButton('Save')
+        self.save_button.clicked.connect(self.save)
 
         self.layout = QtWidgets.QFormLayout(self)
         self.layout.addRow(QtWidgets.QLabel('Theme:'), self.theme)
         self.layout.addRow(QtWidgets.QLabel('Default Directory:'), self.default_dir)
-        self.layout.setAlignment(QtCore.Qt.AlignTop)
-        self.layout.addWidget(self.button)
+        self.layout.addRow(QtWidgets.QLabel('Streaming App:'), self.apps)
+        self.layout.addRow(QtWidgets.QLabel('Custom App'), self.custom_app)
+        self.layout.addRow(QtWidgets.QLabel('Use Discord:'), self.use_discord)
+        self.layout.addRow(QtWidgets.QLabel('Discord Token:'), self.discord_token)
+        self.layout.addRow(QtWidgets.QLabel('Set Controls:'), self.controls)
+        self.layout.addWidget(self.save_button)
 
-        # TODO: Figure out settings and write the options and saving button
+    def enable_custom_app(self):
+        if self.apps.currentText() == 'Custom':
+            self.custom_app.setEnabled(True)
+        else:
+            self.custom_app.setEnabled(False)
+
+    def open_controls_menu(self):
+        self.control_menu = ControlsMenu(self.settings)
+        self.control_menu.resize(int(self.settings.general['window_width']) + 150, int(self.settings.general['window_height']) + 150)
+        self.control_menu.setWindowTitle('Set Controls')
+        self.control_menu.show()
+
+    def save(self):
+        self.settings.change_setting('GENERAL', 'theme', self.theme.currentText())
+        self.settings.change_setting('GENERAL', 'default_dir', self.default_dir.current_dir.text())
+        self.settings.change_setting('HUNT', 'streaming_app', self.apps.currentText())
+        self.settings.change_setting('HUNT', 'custom_app', self.custom_app.text())
+        self.settings.change_setting('HUNT', 'use_discord', str(self.use_discord.isChecked()))
+        self.settings.change_setting('HUNT', 'discord_token', self.discord_token.text())
 
 class ChangeDirButton(QtWidgets.QWidget):
-    def __init__(self):
+    def __init__(self, settings):
         super().__init__()
 
-        self.current_dir = QtWidgets.QLabel('./saves')
+        self.current_dir = QtWidgets.QLabel(settings.general['default_dir'])
         self.button = QtWidgets.QToolButton()
         self.button.setText('...')
         self.button.clicked.connect(self.change_dir)

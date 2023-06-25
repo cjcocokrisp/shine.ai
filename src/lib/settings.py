@@ -11,28 +11,33 @@ class Settings():
                 'default_dir':'./saves'
               }
     hunt = {
-             'streaming_app':'snickerstream',
-             'use_discord': True,
-             'discord_token': None
+             'streaming_app':'Snickerstream',
+             'custom_app':'',
+             'use_discord': 'True',
+             'discord_token': 'Not Set'
            }
     control = {
-                'left': None,
-                'right': None,
-                'up': None,
-                'down': None,
-                'a': None,
-                'b': None,
-                'x': None,
-                'y': None,
-                'l': None,
-                'r': None,
-                'zl': None,
-                'zr': None,
-                'start': None,
-                'select': None,
-                'home': None
+                'laxis_hor': '',
+                'laxis_ver': '',
+                'raxis_hor': '',
+                'raxis_ver': '',
+                'dpad_left': '',
+                'dpad_right': '',
+                'dpad_up': '',
+                'dpad_down': '',
+                'a': '',
+                'b': '',
+                'x': '',
+                'y': '',
+                'l': '',
+                'r': '',
+                'zl': '',
+                'zr': '',
+                'start': '',
+                'select': '',
+                'home': ''
               }
-
+    
     def load_settings(self):
         if isfile('settings.ini'):
             self.parser = ConfigParser()
@@ -44,7 +49,7 @@ class Settings():
             for item in self.parser.items('HUNT'):
                 self.hunt[item[0]] = item[1]
 
-            for item in self.parser.items('GENERAL'):
+            for item in self.parser.items('CONTROL'):
                 self.control[item[0]] = item[1]
 
         else:
@@ -66,6 +71,9 @@ class Settings():
         fp.write('[CONTROL]\n')
         for key in self.control.keys():
             fp.write(f'{key} = {self.control[key]}\n')
+
+        self.parser = ConfigParser()
+        self.parser.read('settings.ini')
 
     def change_setting(self, section, name, value):
         self.parser.set(section, name, value)

@@ -12,7 +12,7 @@ settings.load_settings()
 
 app = QtWidgets.QApplication([])
 app.setWindowIcon(QtGui.QIcon(f'assets/icon.png'))
-widget = StartMenu()
+widget = StartMenu(settings)
 widget.resize(int(settings.general['window_width']), int(settings.general['window_height']))
 widget.setWindowTitle('Shine.AI')
 widget.show()
