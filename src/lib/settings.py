@@ -8,13 +8,14 @@ class Settings():
                 'window_width':500,
                 'window_height':400,
                 'theme':'Light',
-                'default_dir':'./saves'
+                'default_dir':'./saves',
+                'low_storage': 'False'
               }
     hunt = {
              'streaming_app':'Snickerstream',
              'custom_app':'',
              'use_discord': 'True',
-             'discord_token': 'Not Set'
+             'discord_token': 'Not Set',
            }
     control = {
                 'laxis_hor': '',

@@ -3,6 +3,7 @@ from PySide6 import QtWidgets
 from src.main_menu import MainMenu
 from src.settings_tab import SettingsTab
 from src.lib.file import File, create_file
+from src.lib.cache import cache_names
 import os
 
 class StartMenu(QtWidgets.QWidget):
@@ -29,24 +30,14 @@ class NewTab(QtWidgets.QWidget):
         self.mon = QtWidgets.QComboBox()
         self.mon.addItem('')
 
-        if os.path.isdir('cache') == False:
-            os.mkdir('cache')
+        if not os.path.isfile('cache/pkmn-names-full.txt'):
+            cache_names()
 
-        if os.path.isfile('cache/pkmn-names-full.txt'):
-            file = open('cache/pkmn-names-full.txt', 'r')
-            full_list = file.readlines()
-            for mon in full_list:
-                self.mon.addItem(mon.replace('\n', ''))
-            file.close()
-        else:
-            full_list = pb.pokemon('?limit=2000&offset=0')
-            to_write = []
-            for mon in full_list.results:
-                self.mon.addItem(str(mon.name).capitalize())
-                to_write.append(str(mon.name).capitalize() + '\n')
-                file = open('cache/pkmn-names-full.txt', 'w')
-                file.writelines(to_write)
-                file.close()
+        file = open('cache/pkmn-names-full.txt', 'r')
+        full_list = file.readlines()
+        for mon in full_list:
+            self.mon.addItem(mon.replace('\n', ''))
+        file.close()
         self.mon.setEditable(True)
 
         self.game = QtWidgets.QLineEdit('')
@@ -73,8 +64,6 @@ class NewTab(QtWidgets.QWidget):
         self.main_menu.setWindowTitle('Shine.AI')
         self.main_menu.show()
         self.caller.close()
-
-
 
 class LoadTab(QtWidgets.QWidget):
     def __init__(self, settings, caller):

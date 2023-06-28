@@ -1,5 +1,6 @@
 from PySide6 import QtWidgets
 from src.controls_menu import ControlsMenu
+from src.lib.cache import clear_cache
 
 class SettingsTab(QtWidgets.QWidget):
     def __init__(self, settings):
@@ -39,12 +40,19 @@ class SettingsTab(QtWidgets.QWidget):
             self.use_discord.setChecked(True)
 
         self.discord_token = QtWidgets.QLineEdit(self.settings.hunt['discord_token'])
+        
+        self.low_storage = QtWidgets.QCheckBox()
+        if self.settings.general['low_storage'] == 'True':
+            self.low_storage.setChecked(True)
 
         self.controls = QtWidgets.QPushButton('...')
         self.controls.clicked.connect(self.open_controls_menu)
 
         self.save_button = QtWidgets.QPushButton('Save')
         self.save_button.clicked.connect(self.save)
+
+        self.cache_button = QtWidgets.QPushButton('Clear Cache')
+        self.cache_button.clicked.connect(clear_cache)
 
         self.layout = QtWidgets.QFormLayout(self)
         self.layout.addRow(QtWidgets.QLabel('Theme:'), self.theme)
@@ -53,8 +61,10 @@ class SettingsTab(QtWidgets.QWidget):
         self.layout.addRow(QtWidgets.QLabel('Custom App'), self.custom_app)
         self.layout.addRow(QtWidgets.QLabel('Use Discord:'), self.use_discord)
         self.layout.addRow(QtWidgets.QLabel('Discord Token:'), self.discord_token)
+        self.layout.addRow(QtWidgets.QLabel('Low Storage Mode:'), self.low_storage)
         self.layout.addRow(QtWidgets.QLabel('Set Controls:'), self.controls)
         self.layout.addWidget(self.save_button)
+        self.layout.addWidget(self.cache_button)
 
     def enable_custom_app(self):
         if self.apps.currentText() == 'Custom':
@@ -75,6 +85,7 @@ class SettingsTab(QtWidgets.QWidget):
         self.settings.change_setting('HUNT', 'custom_app', self.custom_app.text())
         self.settings.change_setting('HUNT', 'use_discord', str(self.use_discord.isChecked()))
         self.settings.change_setting('HUNT', 'discord_token', self.discord_token.text())
+        self.settings.change_setting('GENERAL', 'low_storage', str(self.low_storage.isChecked()))
 
 class ChangeDirButton(QtWidgets.QWidget):
     def __init__(self, settings):
