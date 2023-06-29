@@ -14,7 +14,7 @@ settings.load_settings()
 if not os.path.isdir('cache'):
     os.mkdir('cache')
     
-if not os.path.isdir('saves')):
+if not os.path.isdir('saves'):
     os.mkdir('saves')
 
 app = QtWidgets.QApplication([])
