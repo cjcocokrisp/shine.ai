@@ -17,7 +17,11 @@ def cache_names():
         file.writelines(to_write)
         file.close()
 
-def cache_img(request):
+def cache_img(type, request):
+    sprite = pb.SpriteResource(type, request)
+    urllib.request.urlretrieve(str(sprite.url), f'cache/{request}.png')
+
+def cache_mon_img(request):
     try:
         mon_api_data = pb.APIResource('pokemon', request.lower())
 
@@ -28,8 +32,3 @@ def cache_img(request):
         urllib.request.urlretrieve(str(sprite.url), f'cache/S{request.lower()}.png') 
     except:
         pass # Catch the exception if there is no sprite for the pokemon.
-
-
-
-
-

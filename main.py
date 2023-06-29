@@ -11,8 +11,11 @@ ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 settings = Settings()
 settings.load_settings()
 
-if os.path.isdir('cache') == False:
+if not os.path.isdir('cache'):
     os.mkdir('cache')
+    
+if not os.path.isdir('saves')):
+    os.mkdir('saves')
 
 app = QtWidgets.QApplication([])
 app.setWindowIcon(QtGui.QIcon(f'assets/ui/icon.png'))

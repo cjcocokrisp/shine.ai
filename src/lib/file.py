@@ -17,6 +17,7 @@ class File:
         return wrapper
 
     def __init__(self, path:str):
+        self.path = path
         self.file = open(path, 'r+')
         if self.file.readline() != '<SHINE.AI_HUNT_FILE>\n':
             raise self.InvalidFileError(path)
