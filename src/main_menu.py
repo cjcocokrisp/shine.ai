@@ -1,6 +1,6 @@
 from PySide6 import QtWidgets, QtGui, QtCore
 from src.settings_tab import SettingsTab
-from src.lib.cache import cache_img, cache_mon_img
+from src.lib.cache import cache_mon_img
 import src.start_menu
 from os.path import isfile
 
@@ -10,7 +10,7 @@ class MainMenu(QtWidgets.QWidget):
         super().__init__()
 
         self.tabs = QtWidgets.QTabWidget()
-        self.tabs.addTab(InfoTab(file), 'Info')
+        self.tabs.addTab(InfoTab(file, settings), 'Info')
         self.tabs.addTab(StatusTab(), 'Status')
         self.tabs.addTab(HuntTab(), 'Hunt')
         self.tabs.addTab(ConfigureTab(), 'Configure')
@@ -21,9 +21,29 @@ class MainMenu(QtWidgets.QWidget):
         self.layout.addWidget(self.tabs)
 
 class InfoTab(QtWidgets.QWidget):
-    def __init__(self, file):
+    def __init__(self, file, settings):
         super().__init__()
 
+        self.w = int(settings.general['window_width'])
+        self.h = int(settings.general['window_height'])
+        self.file = file
+
+        self.info = InfoDisplay(file, self.w, self.h)
+
+        self.screenshot = QtWidgets.QLabel()
+        if self.file.status.find('not') == -1:
+            name = self.file.path
+            while name.find('/') != -1:
+                name = name[name.find('/') + 1:]
+            name = name[:name.find('.')]
+            ss_path = f'data/{name}/found.png'
+        else:
+            ss_path = 'assets/ui/ssplaceholder.png'
+        self.screenshot.setPixmap(QtGui.QPixmap(ss_path))
+
+        self.layout = QtWidgets.QVBoxLayout(self)
+        self.layout.addWidget(self.info)
+        self.layout.addWidget(self.screenshot, alignment=QtCore.Qt.AlignCenter)
         
 class StatusTab(QtWidgets.QWidget):
     def __init__(self):
@@ -45,11 +65,8 @@ class DisplayBar(QtWidgets.QWidget):
         self.settings = settings
         self.caller = caller
 
-        if not isfile('cache/poke-ball.png'):
-            cache_img('items/gen5', 'poke-ball')
-
-        self.mon = QtWidgets.QLabel()
-        self.mon.setPixmap(QtGui.QPixmap(f'cache/poke-ball.png'))
+        self.icon = QtWidgets.QLabel()
+        self.icon.setPixmap(QtGui.QPixmap(f'assets/ui/poke-ball.png'))
 
         self.close_button = QtWidgets.QPushButton('Close')
         self.close_button.clicked.connect(self.close)
@@ -58,12 +75,11 @@ class DisplayBar(QtWidgets.QWidget):
         self.layout.setColumnStretch(3, 1)
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.mon)
+        self.layout.addWidget(self.icon)
 
         name = file.path
         while name.find('/') != -1:
             name = name[name.find('/') + 1:]
-            print(name)
         name = name[:name.find('.')]
 
         self.layout.addWidget(QtWidgets.QLabel(name), 0, 1, alignment=QtCore.Qt.AlignLeft)
@@ -77,3 +93,39 @@ class DisplayBar(QtWidgets.QWidget):
         self.main_menu.setWindowTitle('Shine.AI')
         self.main_menu.show()
         self.caller.close()
+
+class InfoDisplay(QtWidgets.QWidget):
+
+    def __init__(self, file, width, height):
+        super().__init__()
+
+        self.file = file
+        self.w = width
+        self.h = height
+
+        if not isfile(f'cache/N{file.hunt.lower()}.png') or not isfile(f'cache/S{file.hunt.lower()}.png'):
+            status = cache_mon_img(file.hunt.lower())
+        else: status = True
+
+        self.sprite = QtWidgets.QLabel()
+        if status:
+            if file.status.find('not') == -1: tag = 'S'
+            else: tag = 'N'
+            sprite_path = f'cache/{tag}{file.hunt.lower()}.png'
+        else: sprite_path = f'assets/ui/unknown.png'
+
+        pixmap = QtGui.QPixmap(sprite_path)
+        pixmap = pixmap.scaled(self.w - 180, self.h - 180, QtCore.Qt.KeepAspectRatio)
+        self.sprite.setPixmap(pixmap)
+
+        info = 'Shiny Hunt Information:'
+        for key in self.file.basic_info.keys():
+            info += '\n'
+            info += f'{key.capitalize()}: {self.file.basic_info[key]}'
+
+        self.info = QtWidgets.QLabel(info)
+        self.info.setStyleSheet('font-size: 14pt;')
+
+        self.layout = QtWidgets.QHBoxLayout(self)
+        self.layout.addWidget(self.sprite)
+        self.layout.addWidget(self.info)

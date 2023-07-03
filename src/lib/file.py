@@ -25,6 +25,7 @@ class File:
         self.process_log()
         self.process_commands()
         self.process_info()
+        self.set_basic_info()
 
     @read_method
     def process_log(self):
@@ -82,6 +83,21 @@ class File:
         self.process_log()
         self.process_commands()
         self.process_info()
+        self.set_basic_info()
+
+    def set_basic_info(self):
+        if self.start_time == 'None': 
+            temp = 'Not started yet'
+        else:  
+            temp = f'Started on {self.start_date} at {self.start_time}'
+        self.basic_info = {
+            'hunt': self.hunt,
+            'encounters': self.encounters,
+            'game': self.game,
+            'method': self.method,
+            'start': temp,
+            'status': self.status
+        }
 
     def close(self):
         self.file.close()

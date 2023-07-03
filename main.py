@@ -17,6 +17,9 @@ if not os.path.isdir('cache'):
 if not os.path.isdir('saves'):
     os.mkdir('saves')
 
+if not os.path.isdir('data'):
+    os.mkdir('data')
+
 app = QtWidgets.QApplication([])
 app.setWindowIcon(QtGui.QIcon(f'assets/ui/icon.png'))
 widget = StartMenu(settings)

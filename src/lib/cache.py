@@ -30,5 +30,6 @@ def cache_mon_img(request):
 
         sprite = pb.SpriteResource('pokemon', str(mon_api_data.id), shiny=True)
         urllib.request.urlretrieve(str(sprite.url), f'cache/S{request.lower()}.png') 
+        return True
     except:
-        pass # Catch the exception if there is no sprite for the pokemon.
+        return False # Catch the exception if there is no sprite for the pokemon.

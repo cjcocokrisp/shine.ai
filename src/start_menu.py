@@ -53,11 +53,12 @@ class NewTab(QtWidgets.QWidget):
         self.layout.addWidget(self.button)
 
     def create(self):
-        create_file(self.hunt.text(), 'saves')
-        file = File(f'saves/{self.hunt.text()}.hunt')
+        create_file(self.hunt.text(), self.settings.general['default_dir'])
+        file = File(f"{self.settings.general['default_dir']}/{self.hunt.text()}.hunt")
         file.update_parameter("Hunt", self.mon.currentText())
         file.update_parameter("Game", self.game.text())
         file.update_parameter("Method", self.method.text())
+        os.mkdir(f'data/{self.hunt.text()}')
 
         self.main_menu = MainMenu(file, self.settings)
         self.main_menu.resize(int(self.settings.general['window_width']) + 200, int(self.settings.general['window_height']) + 200)

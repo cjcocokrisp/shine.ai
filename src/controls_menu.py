@@ -68,7 +68,9 @@ class ControlDiagram(QtWidgets.QWidget):
     def change_view(self):
         console = self.selection.currentText().replace(' ', '_').replace('/', '_').lower()
         if console in self.control_indexs.keys():
-            self.image.setPixmap(QtGui.QPixmap(f'assets/console/{console}.png').scaled(self.w - 60, self.h - 60, QtCore.Qt.KeepAspectRatio))
+            pixmap = QtGui.QPixmap(f'assets/console/{console}.png')
+            pixmap = pixmap.scaled(self.w - 60, self.h - 60, QtCore.Qt.KeepAspectRatio)
+            self.image.setPixmap(pixmap)
             for i in range(len(self.control_set.names)):
                 if i in self.control_indexs[console]:
                     self.control_set.labels[i].setStyleSheet('background-color: rgb(74, 224, 92)')
@@ -78,5 +80,3 @@ class ControlDiagram(QtWidgets.QWidget):
             self.image.setText('Select a console to view controls for it.')
             for i in range(len(self.control_set.names)):
                 self.control_set.labels[i].setStyleSheet('')
-
-
