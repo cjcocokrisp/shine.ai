@@ -13,5 +13,5 @@ Shiny has not been found
 <COMMANDS>
 
 <INFO>
-Model Name: None
+Accuracy: NOT TESTED
 Passed: False

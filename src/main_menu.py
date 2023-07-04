@@ -1,8 +1,10 @@
 from PySide6 import QtWidgets, QtGui, QtCore
+from discord.ext import commands
 from src.settings_tab import SettingsTab
 from src.lib.cache import cache_mon_img
 import src.start_menu
 from os.path import isfile
+from discord import Intents
 
 class MainMenu(QtWidgets.QWidget):
 
@@ -11,7 +13,7 @@ class MainMenu(QtWidgets.QWidget):
 
         self.tabs = QtWidgets.QTabWidget()
         self.tabs.addTab(InfoTab(file, settings), 'Info')
-        self.tabs.addTab(StatusTab(), 'Status')
+        self.tabs.addTab(StatusTab(file, settings), 'Status')
         self.tabs.addTab(HuntTab(), 'Hunt')
         self.tabs.addTab(ConfigureTab(), 'Configure')
         self.tabs.addTab(SettingsTab(settings), 'Settings')
@@ -46,8 +48,42 @@ class InfoTab(QtWidgets.QWidget):
         self.layout.addWidget(self.screenshot, alignment=QtCore.Qt.AlignCenter)
         
 class StatusTab(QtWidgets.QWidget):
-    def __init__(self):
+    def __init__(self, file, settings):
         super().__init__()
+
+        self.settings = settings
+        if self.settings.hunt['use_discord'] == 'True':
+            self.test_discord_connection()
+            if self.bot_passed:
+                self.bot_status = 'Valid Discord Bot Token'
+            else:
+                self.bot_status = 'Invalid Discord Bot Token'
+        else:
+            self.bot_status = 'Discord Updates Are Not Being Used'
+            
+        self.bot_label = QtWidgets.QLabel(self.bot_status)
+        self.bot_label.setStyleSheet('font-size: 14pt;')
+
+        self.model_label = QtWidgets.QLabel(f'Model Accuracy: {file.accuracy}')
+        self.model_label.setStyleSheet('font-size: 14pt;')
+
+        self.layout = QtWidgets.QHBoxLayout(self)
+        self.layout.addWidget(self.bot_label, alignment=QtCore.Qt.AlignCenter)
+        self.layout.addWidget(self.model_label, alignment=QtCore.Qt.AlignCenter)
+
+    def test_discord_connection(self):
+        client = commands.Bot(command_prefix='TEST', intents=Intents.default())
+        
+        @client.event
+        async def on_ready():
+            self.bot_passed = True
+            await client.close()
+
+        try:
+            client.run(self.settings.hunt['discord_token'])
+        except:
+            self.bot_passed = False
+
 
 class HuntTab(QtWidgets.QWidget):
     def __init__(self):
@@ -118,10 +154,10 @@ class InfoDisplay(QtWidgets.QWidget):
         pixmap = pixmap.scaled(self.w - 180, self.h - 180, QtCore.Qt.KeepAspectRatio)
         self.sprite.setPixmap(pixmap)
 
-        info = 'Shiny Hunt Information:'
+        info = ''
         for key in self.file.basic_info.keys():
-            info += '\n'
             info += f'{key.capitalize()}: {self.file.basic_info[key]}'
+            info += '\n'
 
         self.info = QtWidgets.QLabel(info)
         self.info.setStyleSheet('font-size: 14pt;')

@@ -61,7 +61,7 @@ class File:
         while line != '<INFO>\n':
             line = self.file.readline()
 
-        self.model_name = self.file.readline().replace('\n','').replace('Model Name: ', '')
+        self.accuracy = self.file.readline().replace('\n','').replace('Accuracy: ', '')
         self.passed = bool(self.file.readline().replace('\n','').replace('Passed: ', ''))
         
     def update_parameter(self, parameter, new_val):
