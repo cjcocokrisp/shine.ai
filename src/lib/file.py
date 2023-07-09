@@ -81,9 +81,25 @@ class File:
         self.file.seek(0)
 
         self.process_log()
-        self.process_commands()
         self.process_info()
         self.set_basic_info()
+
+    def write_commands(self, commands):
+        lines = self.file.readlines()
+        command_index = lines.index('<COMMANDS>\n')
+        commands_added = 0
+        for index, cmd in enumerate(commands):
+            if lines[command_index + (index + 1)] == '\n':
+                lines.insert(command_index + (index + 1), ','.join(cmd) + '\n')
+            else: 
+                lines[command_index + (index + 1)] = ','.join(cmd) + '\n'
+            commands_added += 1
+        self.file.seek(0)
+        self.file.writelines(lines)
+        self.file.truncate()
+        self.file.seek(0)
+
+        self.process_commands()
 
     def set_basic_info(self):
         if self.start_time == 'None': 

@@ -45,11 +45,15 @@ class ControlDiagram(QtWidgets.QWidget):
 
     }
 
-    def __init__(self, control_set, settings):
+    def __init__(self, control_set, settings, scale_factor=60):
         super().__init__()
 
-        self.control_set = control_set
+        if control_set != None:
+            self.control_set = control_set
+        else:
+            self.control_set = None
         self.settings = settings
+        self.scale_factor = scale_factor
 
         self.w = int(self.settings.general['window_width'])
         self.h = int(self.settings.general['window_height'])
@@ -63,20 +67,22 @@ class ControlDiagram(QtWidgets.QWidget):
         
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(self.selection, alignment=QtCore.Qt.AlignRight)
-        self.layout.addWidget(self.image)
+        self.layout.addWidget(self.image, alignment=QtCore.Qt.AlignRight)
 
     def change_view(self):
         console = self.selection.currentText().replace(' ', '_').replace('/', '_').lower()
         if console in self.control_indexs.keys():
             pixmap = QtGui.QPixmap(f'assets/console/{console}.png')
-            pixmap = pixmap.scaled(self.w - 60, self.h - 60, QtCore.Qt.KeepAspectRatio)
+            pixmap = pixmap.scaled(self.w - self.scale_factor, self.h - self.scale_factor, QtCore.Qt.KeepAspectRatio)
             self.image.setPixmap(pixmap)
-            for i in range(len(self.control_set.names)):
-                if i in self.control_indexs[console]:
-                    self.control_set.labels[i].setStyleSheet('background-color: rgb(74, 224, 92)')
-                else:
-                    self.control_set.labels[i].setStyleSheet('background-color: rgb(224, 74, 74)')
+            if self.control_set != None:
+                for i in range(len(self.control_set.names)):
+                    if i in self.control_indexs[console]:
+                        self.control_set.labels[i].setStyleSheet('background-color: rgb(74, 224, 92)')
+                    else:
+                        self.control_set.labels[i].setStyleSheet('background-color: rgb(224, 74, 74)')
         else:
             self.image.setText('Select a console to view controls for it.')
-            for i in range(len(self.control_set.names)):
-                self.control_set.labels[i].setStyleSheet('')
+            if self.control_set != None:
+                for i in range(len(self.control_set.names)):
+                    self.control_set.labels[i].setStyleSheet('')
