@@ -1,12 +1,15 @@
 from PySide6 import QtWidgets, QtGui, QtCore
+import PySide6.QtGui
 from src.controls_menu import ControlSet, ControlDiagram
 from src.timeline_element import TimelineElement
 from src.input_test import InputTest 
 
 class InputMappingTool(QtWidgets.QWidget):
 
-    def __init__(self, file, settings):
+    def __init__(self, parent, file, settings):
         super().__init__()
+
+        self.parent = parent
 
         self.timeline = Timeline(file, settings)
         self.selection = InputSelection(settings, self.timeline)
@@ -16,6 +19,9 @@ class InputMappingTool(QtWidgets.QWidget):
         self.layout.addWidget(ToolBar(file, settings, self))
         self.layout.addWidget(self.timeline)
         self.layout.addWidget(self.selection)
+
+    def closeEvent(self, event):
+        self.parent.setDisabled(False)
 
 class ToolBar(QtWidgets.QWidget):
     

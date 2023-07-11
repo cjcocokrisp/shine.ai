@@ -1,12 +1,18 @@
 from PySide6 import QtWidgets, QtGui, QtCore
+import PySide6.QtGui
 
 class ControlsMenu(QtWidgets.QWidget):
-    def __init__(self, settings):
+    def __init__(self, parent, settings):
         super().__init__()
+
+        self.parent = parent
 
         self.layout = QtWidgets.QHBoxLayout(self)
         self.layout.addWidget(ControlSet(settings))
         self.layout.addWidget(ControlDiagram(self.layout.itemAt(0).widget(), settings))
+
+    def closeEvent(self, event):
+        self.parent.setDisabled(False)
 
 class ControlSet(QtWidgets.QWidget):
     def __init__(self, settings):

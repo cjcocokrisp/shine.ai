@@ -16,8 +16,8 @@ class MainMenu(QtWidgets.QWidget):
         self.tabs.addTab(InfoTab(file, settings), 'Info')
         self.tabs.addTab(StatusTab(file, settings), 'Status')
         self.tabs.addTab(HuntTab(), 'Hunt')
-        self.tabs.addTab(ConfigureTab(file, settings), 'Configure')
-        self.tabs.addTab(SettingsTab(settings), 'Settings')
+        self.tabs.addTab(ConfigureTab(self, file, settings), 'Configure')
+        self.tabs.addTab(SettingsTab(self, settings), 'Settings')
 
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(DisplayBar(file, settings, self))
@@ -85,15 +85,15 @@ class StatusTab(QtWidgets.QWidget):
         except:
             self.bot_passed = False
 
-
 class HuntTab(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
 class ConfigureTab(QtWidgets.QWidget):
-    def __init__(self, file, settings):
+    def __init__(self, parent, file, settings):
         super().__init__()
 
+        self.parent = parent
         self.file = file
         self.settings = settings
 
@@ -109,10 +109,14 @@ class ConfigureTab(QtWidgets.QWidget):
         self.layout.addWidget(self.training)
 
     def load_control_mapping(self):
-        self.main_menu = src.input_mapping.InputMappingTool(self.file, self.settings)
-        self.main_menu.resize(int(self.settings.general['window_width']) + 500, int(self.settings.general['window_height']) + 250)
-        self.main_menu.setWindowTitle('Input Mapping Tool')
-        self.main_menu.show()
+        self.control_mapping = src.input_mapping.InputMappingTool(self.parent, self.file, self.settings)
+        self.control_mapping.resize(int(self.settings.general['window_width']) + 500, int(self.settings.general['window_height']) + 250)
+        self.control_mapping.setWindowTitle('Input Mapping Tool')
+        self.control_mapping.show()
+        self.parent.setDisabled(True)
+
+    def load_model_training(self):
+        pass
 
 class DisplayBar(QtWidgets.QWidget):
     def __init__(self, file, settings, caller):

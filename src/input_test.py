@@ -1,4 +1,4 @@
-from PySide6 import QtWidgets, QtGui, QtCore
+from PySide6 import QtWidgets
 from importlib.machinery import SourceFileLoader
 from src.lib.gen_cmd_script import gen_cmd_script
 import threading

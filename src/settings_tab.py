@@ -3,10 +3,11 @@ from src.controls_menu import ControlsMenu
 from src.lib.cache import clear_cache
 
 class SettingsTab(QtWidgets.QWidget):
-    def __init__(self, settings):
+    def __init__(self, parent, settings):
         super().__init__()
 
         self.settings = settings
+        self.parent = parent
 
         self.theme = QtWidgets.QComboBox()
         self.theme.addItems(['Light', 'Dark'])
@@ -73,10 +74,11 @@ class SettingsTab(QtWidgets.QWidget):
             self.custom_app.setEnabled(False)
 
     def open_controls_menu(self):
-        self.control_menu = ControlsMenu(self.settings)
+        self.control_menu = ControlsMenu(self.parent, self.settings)
         self.control_menu.resize(int(self.settings.general['window_width']) + 150, int(self.settings.general['window_height']) + 150)
         self.control_menu.setWindowTitle('Set Controls')
         self.control_menu.show()
+        self.parent.setDisabled(True)
 
     def save(self):
         self.settings.change_setting('GENERAL', 'theme', self.theme.currentText())

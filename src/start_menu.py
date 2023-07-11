@@ -13,7 +13,7 @@ class StartMenu(QtWidgets.QWidget):
         self.tab = QtWidgets.QTabWidget()
         self.tab.addTab(NewTab(settings, self), 'New')
         self.tab.addTab(LoadTab(settings, self), 'Load')
-        self.tab.addTab(SettingsTab(settings), 'Settings')
+        self.tab.addTab(SettingsTab(self, settings), 'Settings')
 
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(self.tab)
