@@ -25,12 +25,12 @@ class InputMappingTool(QtWidgets.QWidget):
 
 class ToolBar(QtWidgets.QWidget):
     
-    def __init__(self, file, settings, caller):
+    def __init__(self, file, settings, parent):
         super().__init__()
 
         self.file = file
         self.settings = settings
-        self.caller = caller
+        self.parent = parent
 
         self.icon = QtWidgets.QLabel()
         self.icon.setPixmap(QtGui.QPixmap('assets/ui/poke-ball.png'))
@@ -42,7 +42,7 @@ class ToolBar(QtWidgets.QWidget):
         self.save_button.clicked.connect(self.save)
 
         self.quit_button = QtWidgets.QPushButton('Close')
-        self.quit_button.clicked.connect(self.close)
+        self.quit_button.clicked.connect(self.parent.close)
 
         name = file.path
         while name.find('/') != -1:
@@ -66,11 +66,8 @@ class ToolBar(QtWidgets.QWidget):
         self.main_menu.show()
 
     def save(self):
-        data = self.caller.timeline.diagram_elements
+        data = self.parent.timeline.diagram_elements
         self.file.write_commands(data)
-
-    def close(self):
-        self.caller.close()
 
 class Timeline(QtWidgets.QWidget):
 
@@ -261,10 +258,10 @@ class InputMapper(QtWidgets.QWidget):
 
 class InputDiagram(QtWidgets.QWidget):
 
-    def __init__(self, caller, element_data):
+    def __init__(self, parent, element_data):
         super().__init__()
 
-        self.create_elements(caller, element_data)
+        self.create_elements(parent, element_data)
 
         self.layout = QtWidgets.QGridLayout(self)
         self.layout.setVerticalSpacing(150)
@@ -272,9 +269,9 @@ class InputDiagram(QtWidgets.QWidget):
         for index, element in enumerate(self.elements):
             self.layout.addWidget(element, 1, index)
 
-    def create_elements(self, caller, data):
+    def create_elements(self, parent, data):
         self.elements = []
         if len(data) != 0:
             for index, item in enumerate(data):
-                element = TimelineElement(caller, index, item[0], item[1], item[2], item[3])
+                element = TimelineElement(parent, index, item[0], item[1], item[2], item[3])
                 self.elements.append(element)

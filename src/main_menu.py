@@ -4,6 +4,7 @@ from src.settings_tab import SettingsTab
 from src.lib.cache import cache_mon_img
 import src.start_menu
 import src.input_mapping
+import src.training_suite
 from os.path import isfile
 from discord import Intents
 
@@ -103,6 +104,7 @@ class ConfigureTab(QtWidgets.QWidget):
         self.training.setFixedHeight(int(settings.general['window_height']) / 4)
 
         self.inputs.clicked.connect(self.load_control_mapping)
+        self.training.clicked.connect(self.load_model_training)
 
         self.layout = QtWidgets.QHBoxLayout(self)
         self.layout.addWidget(self.inputs)
@@ -116,15 +118,19 @@ class ConfigureTab(QtWidgets.QWidget):
         self.parent.setDisabled(True)
 
     def load_model_training(self):
-        pass
+        self.training_suite = src.training_suite.ModelTrainingSuite(self.parent, self.file, self.settings)
+        self.training_suite.resize(int(self.settings.general['window_width']) + 500, int(self.settings.general['window_height']) + 250)
+        self.training_suite.setWindowTitle('Model Training Suite')
+        self.training_suite.show()
+        self.parent.setDisabled(True)
 
 class DisplayBar(QtWidgets.QWidget):
-    def __init__(self, file, settings, caller):
+    def __init__(self, file, settings, parent):
         super().__init__()
 
         self.file = file
         self.settings = settings
-        self.caller = caller
+        self.parent = parent
 
         self.icon = QtWidgets.QLabel()
         self.icon.setPixmap(QtGui.QPixmap(f'assets/ui/poke-ball.png'))
@@ -153,7 +159,7 @@ class DisplayBar(QtWidgets.QWidget):
         self.main_menu.resize(int(self.settings.general['window_width']), int(self.settings.general['window_height']))
         self.main_menu.setWindowTitle('Shine.AI')
         self.main_menu.show()
-        self.caller.close()
+        self.parent.close()
 
 class InfoDisplay(QtWidgets.QWidget):
 

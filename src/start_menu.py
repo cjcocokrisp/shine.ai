@@ -59,6 +59,12 @@ class NewTab(QtWidgets.QWidget):
         file.update_parameter("Game", self.game.text())
         file.update_parameter("Method", self.method.text())
         os.mkdir(f'data/{self.hunt.text()}')
+        os.mkdir(f'data/{self.hunt.text()}/dataset')
+        os.mkdir(f'data/{self.hunt.text()}/dataset/not_shiny')
+        os.mkdir(f'data/{self.hunt.text()}/dataset/shiny')
+        os.mkdir(f'data/{self.hunt.text()}/test_data')
+        os.mkdir(f'data/{self.hunt.text()}/test_data/not_shiny')
+        os.mkdir(f'data/{self.hunt.text()}/test_data/shiny')
 
         self.main_menu = MainMenu(file, self.settings)
         self.main_menu.resize(int(self.settings.general['window_width']) + 200, int(self.settings.general['window_height']) + 200)

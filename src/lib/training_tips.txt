@@ -1,0 +1,11 @@
+- Gather images of your hunt both shiny and not shiny.
+- It is best if these images are from in-game of the spot where the hunt would take place.
+- Just a few images will not cut it you probably want around 40 of non shiny and shiny. 
+  You can use cheats or save edits to force the shiny encounter to get screenshots.
+- If the hunt takes place in an area that is effected by the time of day, get pictures at all times of the day.
+- If the pokemon can have multiple different poses during an animation where the screenshot may be get screenshots of those poses. 
+  You never know how connection latency may effect screenshot time so being prepared for all cases is the best.
+- With a shiny that is very similar to the original you may need to increase the number of epoches.
+  Epoches are the amount of times that the model sees the data.
+- Test data is very important you want to make sure your model works right lol. 
+- If you notice that the model is doing good for one type and not the other train more on that other type.
