@@ -1,6 +1,7 @@
 from PySide6 import QtWidgets
 from src.controls_menu import ControlsMenu
 from src.lib.cache import clear_cache
+import qdarktheme
 
 class SettingsTab(QtWidgets.QWidget):
     def __init__(self, parent, settings):
@@ -81,6 +82,10 @@ class SettingsTab(QtWidgets.QWidget):
         self.parent.setDisabled(True)
 
     def save(self):
+
+        if self.settings.general['theme'] != self.theme.currentText():
+            qdarktheme.setup_theme(self.theme.currentText().lower())
+
         self.settings.change_setting('GENERAL', 'theme', self.theme.currentText())
         self.settings.change_setting('GENERAL', 'default_dir', self.default_dir.current_dir.text())
         self.settings.change_setting('HUNT', 'streaming_app', self.apps.currentText())

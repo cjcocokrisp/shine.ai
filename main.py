@@ -4,6 +4,7 @@ from src.lib.cache import clear_cache
 from src.start_menu import StartMenu
 import ctypes
 import os
+import qdarktheme
 
 myappid = 'cjcocokrisp.shineai'
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
@@ -20,7 +21,12 @@ if not os.path.isdir('saves'):
 if not os.path.isdir('data'):
     os.mkdir('data')
 
+
 app = QtWidgets.QApplication([])
+if settings.general['theme'] == 'Dark':
+    qdarktheme.setup_theme()
+else:
+    qdarktheme.setup_theme('light')
 app.setWindowIcon(QtGui.QIcon(f'assets/ui/icon.png'))
 widget = StartMenu(settings)
 widget.resize(int(settings.general['window_width']), int(settings.general['window_height']))
