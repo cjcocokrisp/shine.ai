@@ -14,8 +14,13 @@ class Settings():
     hunt = {
              'streaming_app':'Snickerstream',
              'custom_app':'',
+             'custom_x':0,
+             'custom_y':0,
+             'custom_width':0,
+             'custom_height':0,
              'use_discord': 'True',
              'discord_token': 'Not Set',
+             'spam_channel': 'Not Set'
            }
     control = {
                 'laxis_hor': '',

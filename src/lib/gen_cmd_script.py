@@ -17,6 +17,8 @@ def gen_cmd_script(file):
         if cmd[0] == 'Soft Reset':
             script.write(f"    control.soft_reset(settings.control['l'], settings.control['r'], settings.control['start'], settings.control['select'], {cmd[2]}, test=test)\n")
         if cmd[0] == 'End':
+            script.write('    if test != None:')
+            script.write('        test.test_screenshot()\n')
             script.write('    return\n')
 
     script.close()

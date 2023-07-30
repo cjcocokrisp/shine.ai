@@ -20,7 +20,7 @@ class ModelTrainingSuite(QtWidgets.QWidget):
         self.parent = parent
 
         self.layout = QtWidgets.QVBoxLayout(self)
-        self.layout.addWidget(ToolBar(self, path, settings))
+        self.layout.addWidget(ToolBar(self, path))
         self.layout.addWidget(ImagePreview('data/' + path))
         self.layout.addWidget(TrainingDock('data/' + path, file, settings))
 
@@ -29,15 +29,13 @@ class ModelTrainingSuite(QtWidgets.QWidget):
 
 class ToolBar(QtWidgets.QWidget):
 
-    def __init__(self, parent, path, settings):
+    def __init__(self, parent, path):
         super().__init__()
 
         self.parent = parent
-        self.settings = settings
         
         self.icon = QtWidgets.QLabel()
         self.icon.setPixmap(QtGui.QPixmap('assets/ui/poke-ball.png'))
-
 
         self.tips_button = QtWidgets.QPushButton('Tips')
         self.tips_button.clicked.connect(self.load_tips)

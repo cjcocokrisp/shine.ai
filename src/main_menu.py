@@ -5,6 +5,7 @@ from src.lib.cache import cache_mon_img
 import src.start_menu
 import src.input_mapping
 import src.training_suite
+import src.hunt_menu
 from os.path import isfile
 from discord import Intents
 
@@ -13,10 +14,12 @@ class MainMenu(QtWidgets.QWidget):
     def __init__(self, file, settings):
         super().__init__()
 
+        self.bot_passed = None
+
         self.tabs = QtWidgets.QTabWidget()
         self.tabs.addTab(InfoTab(file, settings), 'Info')
-        self.tabs.addTab(StatusTab(file, settings), 'Status')
-        self.tabs.addTab(HuntTab(), 'Hunt')
+        self.tabs.addTab(StatusTab(self, file, settings), 'Status')
+        self.tabs.addTab(HuntTab(self, file, settings), 'Hunt')
         self.tabs.addTab(ConfigureTab(self, file, settings), 'Configure')
         self.tabs.addTab(SettingsTab(self, settings), 'Settings')
 
@@ -50,7 +53,7 @@ class InfoTab(QtWidgets.QWidget):
         self.layout.addWidget(self.screenshot, alignment=QtCore.Qt.AlignCenter)
         
 class StatusTab(QtWidgets.QWidget):
-    def __init__(self, file, settings):
+    def __init__(self, parent, file, settings):
         super().__init__()
 
         self.settings = settings
@@ -60,13 +63,15 @@ class StatusTab(QtWidgets.QWidget):
                 self.bot_status = 'Valid Discord Bot Token'
             else:
                 self.bot_status = 'Invalid Discord Bot Token'
+            parent.bot_passed = self.bot_passed
         else:
             self.bot_status = 'Discord Updates Are Not Being Used'
+            parent.bot_passed = True
             
         self.bot_label = QtWidgets.QLabel(self.bot_status)
         self.bot_label.setStyleSheet('font-size: 14pt;')
 
-        self.model_label = QtWidgets.QLabel(f'Model Accuracy: {file.accuracy}')
+        self.model_label = QtWidgets.QLabel(f'Model Accuracy: {file.accuracy}%')
         self.model_label.setStyleSheet('font-size: 14pt;')
 
         self.layout = QtWidgets.QHBoxLayout(self)
@@ -87,8 +92,54 @@ class StatusTab(QtWidgets.QWidget):
             self.bot_passed = False
 
 class HuntTab(QtWidgets.QWidget):
-    def __init__(self):
+    def __init__(self, parent, file, settings):
         super().__init__()
+
+        self.parent = parent
+        self.file = file
+        self.settings = settings
+
+        self.start_button = QtWidgets.QPushButton('Enter Hunt')
+        self.start_button.setFixedHeight(int(settings.general['window_height']) / 4)
+        self.start_button.clicked.connect(self.open_hunt_screen)
+
+        self.layout = QtWidgets.QHBoxLayout(self)
+        self.layout.addWidget(self.start_button)
+
+    def open_hunt_screen(self):
+        success = True
+        if len(self.file.commands) == 0:
+            self.dialog = QtWidgets.QErrorMessage()
+            self.dialog.setWindowTitle('ERROR')
+            self.dialog.showMessage('Inputs have not been mapped yet!')
+            success = False
+        elif self.file.accuracy == 'NOT TESTED':
+            self.dialog = QtWidgets.QErrorMessage()
+            self.dialog.setWindowTitle('ERROR')
+            self.dialog.showMessage('Model has not been trained yet!')
+            success = False
+        elif not self.parent.bot_passed:
+            self.dialog = QtWidgets.QErrorMessage()
+            self.dialog.setWindowTitle('ERROR')
+            self.dialog.showMessage('Discord Bot Is Invalid!')
+            success = False
+        elif int(self.file.accuracy) < 90:
+            self.dialog = QtWidgets.QMessageBox()
+            self.dialog.setText('Model accuracy is below 90% are you sure you want to continue?')
+            self.dialog.setWindowTitle('WARNING')
+            self.dialog.setIcon(QtWidgets.QMessageBox.Icon.Information)
+            self.dialog.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok 
+                                           | QtWidgets.QMessageBox.StandardButton.Cancel)
+            selection = self.dialog.exec()
+            if selection == QtWidgets.QMessageBox.StandardButton.Cancel:
+                success = False
+
+        if success:
+            self.hunt_menu = src.hunt_menu.HuntMenu(self.parent, self.file, self.settings)
+            self.hunt_menu.resize(int(self.settings.general['window_width']), int(self.settings.general['window_height']))
+            self.hunt_menu.setWindowTitle('Hunt Menu')
+            self.hunt_menu.show()
+            self.parent.setDisabled(True)
 
 class ConfigureTab(QtWidgets.QWidget):
     def __init__(self, parent, file, settings):

@@ -1,4 +1,4 @@
-from PySide6 import QtWidgets
+from PySide6 import QtWidgets, QtGui
 from src.controls_menu import ControlsMenu
 from src.lib.cache import clear_cache
 import qdarktheme
@@ -22,8 +22,8 @@ class SettingsTab(QtWidgets.QWidget):
         self.default_dir = ChangeDirButton(settings)
 
         self.apps = QtWidgets.QComboBox()
-        self.apps.addItems(['Snickerstream', 'NTRViewer', 'HzMod TEMP', 'Chokistream',
-                            'Elgato TEMP', 'Custom'])
+        self.apps.addItems(['Snickerstream', 'Snickerstream (3DS Top Screen)', 'Snickerstream (3DS Bottom Screen)',
+                            'OBS Windowed Projector', 'Custom'])
         while self.apps.currentText() != self.settings.hunt['streaming_app']:
             if self.apps.currentIndex() + 1 > self.apps.count() - 1:
                 self.apps.setCurrentIndex(0)
@@ -42,6 +42,7 @@ class SettingsTab(QtWidgets.QWidget):
             self.use_discord.setChecked(True)
 
         self.discord_token = QtWidgets.QLineEdit(self.settings.hunt['discord_token'])
+        self.spam_channel = QtWidgets.QLineEdit(self.settings.hunt['spam_channel'])
         
         self.low_storage = QtWidgets.QCheckBox()
         if self.settings.general['low_storage'] == 'True':
@@ -63,6 +64,7 @@ class SettingsTab(QtWidgets.QWidget):
         self.layout.addRow(QtWidgets.QLabel('Custom App'), self.custom_app)
         self.layout.addRow(QtWidgets.QLabel('Use Discord:'), self.use_discord)
         self.layout.addRow(QtWidgets.QLabel('Discord Token:'), self.discord_token)
+        self.layout.addRow(QtWidgets.QLabel('Discord Spam Channel:'), self.spam_channel)
         self.layout.addRow(QtWidgets.QLabel('Low Storage Mode:'), self.low_storage)
         self.layout.addRow(QtWidgets.QLabel('Set Controls:'), self.controls)
         self.layout.addWidget(self.save_button)
@@ -92,6 +94,7 @@ class SettingsTab(QtWidgets.QWidget):
         self.settings.change_setting('HUNT', 'custom_app', self.custom_app.text())
         self.settings.change_setting('HUNT', 'use_discord', str(self.use_discord.isChecked()))
         self.settings.change_setting('HUNT', 'discord_token', self.discord_token.text())
+        self.settings.change_setting('HUNT', 'spam_channel', self.spam_channel.text())
         self.settings.change_setting('GENERAL', 'low_storage', str(self.low_storage.isChecked()))
 
 class ChangeDirButton(QtWidgets.QWidget):

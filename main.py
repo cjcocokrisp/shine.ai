@@ -21,7 +21,6 @@ if not os.path.isdir('saves'):
 if not os.path.isdir('data'):
     os.mkdir('data')
 
-
 app = QtWidgets.QApplication([])
 if settings.general['theme'] == 'Dark':
     qdarktheme.setup_theme()

@@ -91,7 +91,7 @@ class File:
         for index, cmd in enumerate(commands):
             if lines[command_index + (index + 1)] == '\n':
                 lines.insert(command_index + (index + 1), ','.join(cmd) + '\n')
-            else: 
+            else:
                 lines[command_index + (index + 1)] = ','.join(cmd) + '\n'
             commands_added += 1
         self.file.seek(0)
@@ -114,6 +114,20 @@ class File:
             'start': temp,
             'status': self.status
         }
+
+    def set_found(self, date, time, reset=False):
+        if not reset:
+            status = f'Shiny found on {date} at {time}\n'
+        else:
+            status = 'Shiny has not been found\n'
+
+        self.file.seek(0) 
+        lines = self.file.readlines()
+        lines[10] = status
+        self.file.seek(0)
+        self.file.writelines(lines)
+        self.file.truncate()
+        self.file.seek(0)
 
     def close(self):
         self.file.close()
